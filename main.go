@@ -15,6 +15,7 @@ func main() {
 		for _, number := range numbers {
 			double(number, c)
 		}
+		close(c)
 	}()
 	for i := range c {
 		fmt.Println(i)
