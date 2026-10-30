@@ -13,6 +13,7 @@ func main() {
 	// Producer: Generates numbers
 	go func() {
 		genNumber(super)
+		close(super)
 	}()
 
 	// Consumer 1: Squares the numbers
@@ -37,9 +38,12 @@ func square(a int, c chan int) {
 }
 
 func genNumber(ch chan int) {
-	for i := 0; i < 10; i++ {
-		n := rand.IntN(101)
+	nums := make([]int, 10)
+	for i := range nums {
+		nums[i] = rand.IntN(101)
+	}
+	for _, n := range nums {
 		ch <- n
 	}
-	close(ch) // Crucial: Close the channel so the 'range' loop in the receiver knows to stop
+
 }
