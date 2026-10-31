@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand/v2"
 	"net/http"
@@ -8,14 +9,15 @@ import (
 
 // infoHandler обрабатывает запросы и возвращает использованный HTTP-метод
 func infoHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(string(rand.IntN(6))))
+	v := fmt.Sprint(rand.IntN(6) + 1)
+	w.Write([]byte(v))
 }
 
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/random", infoHandler)
 	server := http.Server{
-		Addr:    ":8082", // Обязательно двоеточие перед номером порта
+		Addr:    ":8083", // Обязательно двоеточие перед номером порта
 		Handler: mux,     // Поле Handler должно быть с заглавной буквы
 	}
 	log.Printf("Сервер запущен и слушает порт %s", server.Addr)
