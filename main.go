@@ -2,27 +2,48 @@ package main
 
 import (
 	"fmt"
-	"sync"
+	"math/rand/v2"
 )
 
 func main() {
-	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	// Channels for streaming individual integers
+	super := make(chan int)
 	c := make(chan int)
-	var wg sync.WaitGroup
-	wg.Add(1)
+
+	// Producer: Generates numbers
 	go func() {
-		defer wg.Done()
-		for _, number := range numbers {
-			double(number, c)
-		}
+		genNumber(super)
+		close(super)
 	}()
+
+	// Consumer 1: Squares the numbers
+	go func() {
+		for number := range super {
+			square(number, c)
+		}
+		close(c) // Close the channel when all numbers are processed
+	}()
+
+	// Consumer 2: Prints the results
 	for i := range c {
 		fmt.Println(i)
 	}
-	wg.Wait()
-	fmt.Println("donee")
+
+	fmt.Println("done")
 }
 
-func double(a int, c chan int) {
+// Renamed to 'square' to reflect what it actually does
+func square(a int, c chan int) {
 	c <- a * a
+}
+
+func genNumber(ch chan int) {
+	nums := make([]int, 10)
+	for i := range nums {
+		nums[i] = rand.IntN(101)
+	}
+	for _, n := range nums {
+		ch <- n
+	}
+
 }
